@@ -1,0 +1,244 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Meu Mapa de Férias da Felicidade</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;background:#2b1609;font-family:Arial,sans-serif}body{padding:10px}
+.page{position:relative;width:min(100%,1672px);margin:auto}.map{position:relative;line-height:0}.map img{width:100%;height:auto;display:block}
+.hotspot{position:absolute;z-index:4;border-radius:10px;background:rgba(255,255,255,.001)}.hotspot:hover,.hotspot:focus-visible{outline:4px solid white;box-shadow:0 0 0 7px #1269bd}
+#msg{margin:8px auto;padding:10px;background:#fff8e7;border-radius:10px;text-align:center;line-height:1.35;max-width:800px}
+.overlay{position:absolute;inset:0;z-index:20;background:rgba(0,0,0,.66);display:flex;align-items:center;justify-content:center;padding:18px;line-height:normal}.overlay[hidden]{display:none}
+.card{position:relative;width:min(94%,540px);background:#fff8e7;color:#2f210f;border:4px solid #d49a20;border-radius:20px;padding:26px;text-align:center}
+.card h2{font-size:28px;margin:0 30px 10px}.close{position:absolute;right:10px;top:6px;border:0;background:transparent;font-size:34px;cursor:pointer}
+.actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:18px 0}.vote{min-height:50px;border:0;border-radius:12px;padding:12px 20px;background:#321a0b;color:white;font-size:17px;font-weight:bold;cursor:pointer}
+.result{font-size:19px;font-weight:bold;min-height:28px}.note{font-size:12px;opacity:.75;line-height:1.4}
+
+.share-bar{margin:10px auto 0;background:#fff8e7;color:#2f210f;border-radius:14px;padding:13px 16px;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;line-height:normal}
+.share-title{font-weight:700}.share-actions{display:flex;gap:9px;flex-wrap:wrap;justify-content:center}
+.share-btn{min-height:44px;border:0;border-radius:12px;padding:9px 14px;background:#321a0b;color:#fff;font-weight:700;font-size:15px;cursor:pointer}
+.share-btn:hover,.share-btn:focus-visible{outline:3px solid #d49a20}
+.share-status{flex-basis:100%;text-align:center;font-size:13px;min-height:0}
+@media(max-width:560px){.share-btn span{display:none}.share-btn{min-width:48px;font-size:20px}}
+
+
+.countdown{margin:10px auto 4px;padding:9px 12px;border-radius:10px;background:#f3e3b9;font-weight:700;max-width:390px}
+.winner-stage{display:flex;gap:16px;justify-content:center;align-items:flex-end;flex-wrap:wrap;margin-top:16px}
+.winner-stage[hidden]{display:none}
+.person{width:min(45%,190px);display:flex;flex-direction:column;gap:8px;align-items:center}
+.person img{display:block;width:100%;max-height:220px;object-fit:cover;object-position:top;border-radius:16px;border:3px solid #d49a20}
+.result-final{font-size:22px;color:#7b3200}
+@keyframes waniaVictory{
+  0%,100%{transform:translateY(0) rotate(0)}
+  20%{transform:translateY(-12px) rotate(-3deg)}
+  40%{transform:translateY(0) rotate(3deg)}
+  60%{transform:translateY(-9px) rotate(-2deg)}
+  80%{transform:translateY(0) rotate(2deg)}
+}
+@keyframes darliNo{
+  0%,100%{transform:rotate(0)}
+  15%{transform:rotate(-5deg)}
+  30%{transform:rotate(5deg)}
+  45%{transform:rotate(-5deg)}
+  60%{transform:rotate(5deg)}
+  75%{transform:rotate(-3deg)}
+}
+.wania-victory{animation:waniaVictory 1.15s ease-in-out 3;transform-origin:50% 80%}
+.darli-no{animation:darliNo .85s ease-in-out 3;transform-origin:50% 25%}
+.transport-vote{z-index:6}
+@media (prefers-reduced-motion: reduce){
+  .wania-victory,.darli-no{animation:none}
+}
+
+</style></head><body><main class="page"><div class="map"><img src="mapa-ferias.png" alt="Mapa de férias interativo"><a id="casa-fotos" class="hotspot" data-key="CASA_FOTOS" href="galeria.html?p=casa&tab=fotos" style="left:2.6316%;top:39.6387%;width:11.6627%;height:4.4633%"></a>
+<a id="casa-videos" class="hotspot" data-key="CASA_VIDEOS" href="galeria.html?p=casa&tab=videos" style="left:2.6914%;top:44.5271%;width:9.8684%;height:4.6759%"></a>
+<a id="uber-fotos" class="hotspot" data-key="UBER_FOTOS" href="galeria.html?p=uber&tab=fotos" style="left:19.7368%;top:44.7396%;width:10.0478%;height:4.2508%"></a>
+<a id="uber-videos" class="hotspot" data-key="UBER_VIDEOS" href="galeria.html?p=uber&tab=videos" style="left:19.6770%;top:49.2030%;width:10.1675%;height:4.2508%"></a>
+<a id="tiete-fotos" class="hotspot" data-key="TIETE_FOTOS" href="galeria.html?p=tiete&tab=fotos" style="left:74.4019%;top:39.5324%;width:9.7488%;height:4.4633%"></a>
+<a id="tiete-videos" class="hotspot" data-key="TIETE_VIDEOS" href="galeria.html?p=tiete&tab=videos" style="left:84.5694%;top:39.5324%;width:10.5263%;height:4.4633%"></a>
+<a id="congonhas-fotos" class="hotspot" data-key="CONGONHAS_FOTOS" href="galeria.html?p=congonhas&tab=fotos" style="left:75.2392%;top:73.7513%;width:9.0311%;height:4.4633%"></a>
+<a id="congonhas-videos" class="hotspot" data-key="CONGONHAS_VIDEOS" href="galeria.html?p=congonhas&tab=videos" style="left:84.7488%;top:73.7513%;width:10.3469%;height:4.4633%"></a>
+<a id="maceio-fotos" class="hotspot" data-key="MACEIO_FOTOS" href="galeria.html?p=maceio&tab=fotos" style="left:4.4856%;top:83.8470%;width:9.2105%;height:4.2508%"></a>
+<a id="maceio-videos" class="hotspot" data-key="MACEIO_VIDEOS" href="galeria.html?p=maceio&tab=videos" style="left:14.0550%;top:83.8470%;width:10.2273%;height:4.2508%"></a>
+<a id="votacao" class="hotspot" data-key="VOTACAO" href="#" style="left:43.1220%;top:69.9256%;width:10.8852%;height:4.3571%"></a>
+<a id="trem" class="hotspot transport-vote" data-vote="trem" href="#" style="left:37.4402%;top:41.0202%;width:7.5957%;height:4.5696%"></a>
+<a id="onibus" class="hotspot transport-vote" data-vote="onibus" href="#" style="left:53.2297%;top:41.0202%;width:8.6722%;height:4.5696%"></a>
+</div>
+<div id="msg" hidden></div>
+
+<section class="share-bar" aria-label="Compartilhar mapa">
+  <span class="share-title">Compartilhe nosso mapa:</span>
+  <div class="share-actions">
+    <button type="button" class="share-btn" id="shareFacebook" aria-label="Compartilhar no Facebook">f <span>Facebook</span></button>
+    <button type="button" class="share-btn" id="shareInstagram" aria-label="Compartilhar no Instagram">◎ <span>Instagram</span></button>
+    <button type="button" class="share-btn" id="shareWhatsApp" aria-label="Compartilhar no WhatsApp">◉ <span>WhatsApp</span></button>
+  </div>
+  <div id="shareStatus" class="share-status" aria-live="polite"></div>
+</section>
+
+<div id="poll" class="overlay" hidden>
+<section class="card" role="dialog" aria-modal="true" aria-labelledby="pollTitle">
+<button class="close" id="close" type="button" aria-label="Fechar">×</button>
+<h2 id="pollTitle">🚆 Trem ou 🚌 Ônibus?</h2>
+<p id="pollIntro">Darli quer ir de trem, e Wânia quer ir de ônibus. <b>Quem vai vencer esta disputa?</b></p>
+<div id="countdown" class="countdown" aria-live="polite"></div>
+<div id="pollActions" class="actions">
+<button class="vote" data-vote="trem" type="button">🚆 Votar no Trem</button>
+<button class="vote" data-vote="onibus" type="button">🚌 Votar no Ônibus</button>
+</div>
+<div id="result" class="result" aria-live="polite"></div>
+<div id="winnerStage" class="winner-stage" hidden aria-live="polite">
+  <div class="person">
+    <img id="waniaWinner" src="wania-enquete.png" alt="Wânia comemorando a vitória">
+    <strong>🏆 Wânia venceu!</strong>
+  </div>
+  <div class="person">
+    <img id="darliLoser" src="darli-enquete.png" alt="Darli desaprovando o resultado">
+    <strong>Darli não gostou... 😄</strong>
+  </div>
+</div>
+<p class="note">A votação desta brincadeira termina em <b>13/09/2026 às 10:20</b> (horário de Brasília). O resultado final da brincadeira já está combinado: Wânia será a vencedora.</p>
+</section></div></main>
+<script>
+const LINKS={
+  CASA_FOTOS: "galeria.html?p=casa&tab=fotos",
+  CASA_VIDEOS: "galeria.html?p=casa&tab=videos",
+  UBER_FOTOS: "galeria.html?p=uber&tab=fotos",
+  UBER_VIDEOS: "galeria.html?p=uber&tab=videos",
+  TIETE_FOTOS: "galeria.html?p=tiete&tab=fotos",
+  TIETE_VIDEOS: "galeria.html?p=tiete&tab=videos",
+  CONGONHAS_FOTOS: "galeria.html?p=congonhas&tab=fotos",
+  CONGONHAS_VIDEOS: "galeria.html?p=congonhas&tab=videos",
+  MACEIO_FOTOS: "galeria.html?p=maceio&tab=fotos",
+  MACEIO_VIDEOS: "galeria.html?p=maceio&tab=videos"
+};
+const msg=document.getElementById("msg");
+document.querySelectorAll(".hotspot").forEach(el => {
+  if (el.id === "votacao") return;
+  const u = (LINKS[el.dataset.key] || "").trim();
+  if (u) {
+    el.href = u;
+    el.target = "_blank";
+    el.rel = "noopener noreferrer";
+  } else {
+    el.href = "#";
+    el.addEventListener("click", e => {
+      e.preventDefault();
+      msg.hidden = false;
+      msg.textContent = "Este ponto ainda aguarda o link do álbum.";
+    });
+  }
+});
+const shareUrl = window.location.href;
+const shareText = "Veja nosso Mapa de Férias da Felicidade!";
+const shareStatus = document.getElementById("shareStatus");
+
+document.getElementById("shareFacebook").addEventListener("click", () => {
+  window.open("https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(shareUrl), "_blank", "noopener,noreferrer");
+});
+document.getElementById("shareWhatsApp").addEventListener("click", () => {
+  window.open("https://wa.me/?text=" + encodeURIComponent(shareText + " " + shareUrl), "_blank", "noopener,noreferrer");
+});
+document.getElementById("shareInstagram").addEventListener("click", async () => {
+  // Instagram não oferece um compartilhador web equivalente ao Facebook/WhatsApp.
+  // Em aparelhos compatíveis, usa o menu nativo de compartilhamento; caso contrário, abre o Instagram.
+  if (navigator.share) {
+    try {
+      await navigator.share({title: document.title, text: shareText, url: shareUrl});
+      shareStatus.textContent = "Escolha o Instagram no menu de compartilhamento.";
+      return;
+    } catch (e) {
+      if (e && e.name === "AbortError") return;
+    }
+  }
+  shareStatus.textContent = "O Instagram não permite compartilhar uma página diretamente pelo navegador. O Instagram será aberto para você compartilhar o link.";
+  window.open("https://www.instagram.com/", "_blank", "noopener,noreferrer");
+});
+
+
+const poll = document.getElementById("poll");
+const result = document.getElementById("result");
+const countdown = document.getElementById("countdown");
+const pollActions = document.getElementById("pollActions");
+const winnerStage = document.getElementById("winnerStage");
+const waniaWinner = document.getElementById("waniaWinner");
+const darliLoser = document.getElementById("darliLoser");
+const pollDeadline = new Date("2026-09-13T10:20:00-03:00");
+
+function openPoll() {
+  poll.hidden = false;
+  updatePollState();
+}
+function closePoll() {
+  poll.hidden = true;
+}
+function setVote(choice) {
+  if (Date.now() >= pollDeadline.getTime()) {
+    updatePollState();
+    return;
+  }
+  try { localStorage.setItem("mapaFeriasVoto", choice); } catch(e) {}
+  result.textContent = choice === "trem"
+    ? "Seu voto foi para o TREM! 🚆"
+    : "Seu voto foi para o ÔNIBUS da Wânia! 🚌";
+  openPoll();
+}
+function showFinalResult() {
+  pollActions.hidden = true;
+  countdown.textContent = "Votação encerrada em 13/09/2026 às 10:20.";
+  result.textContent = "🏆 RESULTADO FINAL DA BRINCADEIRA: WÂNIA VENCEU E VAI DE ÔNIBUS!";
+  result.classList.add("result-final");
+  winnerStage.hidden = false;
+  waniaWinner.classList.remove("wania-victory");
+  darliLoser.classList.remove("darli-no");
+  void waniaWinner.offsetWidth;
+  waniaWinner.classList.add("wania-victory");
+  darliLoser.classList.add("darli-no");
+}
+function updatePollState() {
+  const now = Date.now();
+  const left = pollDeadline.getTime() - now;
+  if (left <= 0) {
+    showFinalResult();
+    return;
+  }
+  pollActions.hidden = false;
+  winnerStage.hidden = true;
+  result.classList.remove("result-final");
+  const days = Math.floor(left / 86400000);
+  const hours = Math.floor((left % 86400000) / 3600000);
+  const mins = Math.floor((left % 3600000) / 60000);
+  const secs = Math.floor((left % 60000) / 1000);
+  countdown.textContent = `Encerra em ${days}d ${hours}h ${mins}min ${secs}s`;
+  try {
+    const saved = localStorage.getItem("mapaFeriasVoto");
+    if (saved && !result.textContent) {
+      result.textContent = saved === "trem"
+        ? "Seu voto atual neste navegador é TREM. 🚆"
+        : "Seu voto atual neste navegador é ÔNIBUS. 🚌";
+    }
+  } catch(e) {}
+}
+
+document.getElementById("votacao").addEventListener("click", e => {
+  e.preventDefault();
+  openPoll();
+});
+document.getElementById("close").addEventListener("click", closePoll);
+poll.addEventListener("click", e => {
+  if (e.target === poll) closePoll();
+});
+document.querySelectorAll(".vote").forEach(btn => {
+  btn.addEventListener("click", () => setVote(btn.dataset.vote));
+});
+document.querySelectorAll(".transport-vote").forEach(btn => {
+  btn.addEventListener("click", e => {
+    e.preventDefault();
+    setVote(btn.dataset.vote);
+  });
+});
+setInterval(() => {
+  if (!poll.hidden) updatePollState();
+}, 1000);
+updatePollState();
+
+</script>
+
+</body></html>

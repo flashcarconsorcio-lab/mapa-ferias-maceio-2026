@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Uber / Saída — Mapa de Férias</title><link rel="stylesheet" href="assets/galeria.css"></head>
+<body><main class="wrap">
+<div class="top"><a class="back" href="index.html">← Voltar ao mapa</a></div>
+<section class="card"><h1>Uber / Saída</h1><p class="subtitle">Fotos e vídeos publicados por Darli.</p>
+<div class="tabs"><button class="tab active" data-kind="photos">📷 Fotos</button><button class="tab" data-kind="videos">🎬 Vídeos</button></div>
+<div id="grid" class="grid"></div>
+<div class="share"><button id="shareFacebook">Facebook</button><button id="shareInstagram">Instagram</button><button id="shareWhatsApp">WhatsApp</button></div>
+<p class="note">As mídias são carregadas diretamente deste site, sem Google Fotos e sem necessidade de login.</p>
+
+<section class="comments" aria-label="Comentários">
+  <h2>💬 Comentários</h2>
+  <p class="subtitle">Deixe uma mensagem sobre esta etapa da viagem.</p>
+  <form id="commentForm" class="comment-form">
+    <input id="commentName" maxlength="40" placeholder="Seu nome" required>
+    <textarea id="commentText" maxlength="500" placeholder="Escreva seu comentário..." required></textarea>
+    <button type="submit">Publicar comentário</button>
+  </form>
+  <div id="commentList" class="comment-list"></div>
+  <p class="comment-note">Nesta versão, os comentários ficam salvos apenas neste navegador/dispositivo. Para comentários compartilhados entre todos os visitantes, é necessário conectar um banco de dados.</p>
+</section>
+
+</section></main>
+<script>window.GALLERY_SLUG="uber";</script><script src="data/uber.js"></script><script src="assets/galeria.js"></script></body></html>

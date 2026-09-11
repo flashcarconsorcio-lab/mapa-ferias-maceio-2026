@@ -1,0 +1,29 @@
+VERSÃO ESTÁVEL SEM API / SEM NODE.JS
+
+Por que esta versão existe:
+O Vercel Drop publica muito bem páginas estáticas, mas no seu projeto ele não está criando as rotas /api.
+Por isso esta versão usa somente arquivos estáticos, que funcionam no método de arrastar e soltar.
+
+COMO COLOCAR FOTOS:
+1. Extraia este ZIP.
+2. Entre na pasta media.
+3. Coloque as fotos nas pastas:
+   media/casa/fotos
+   media/uber/fotos
+   media/tiete/fotos
+   media/congonhas/fotos
+   media/maceio/fotos
+4. Para vídeos use as pastas videos de cada etapa.
+5. Dê dois cliques em ATUALIZAR_GALERIAS.bat.
+6. Depois arraste a pasta inteira para o projeto wania-enquete-1 na Vercel.
+
+IMPORTANTE:
+- Não precisa de Node.js.
+- Não precisa de /api.
+- Não precisa de Vercel Blob para esta versão.
+- Os visitantes conseguem visualizar, mas não conseguem adicionar arquivos.
+- Comentários continuam locais ao navegador, como antes.
+
+TIPOS:
+Fotos: JPG, JPEG, PNG, WEBP, GIF
+Vídeos: MP4, WEBM, MOV, M4V (MP4 costuma funcionar melhor nos celulares).

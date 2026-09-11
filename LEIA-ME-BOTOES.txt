@@ -1,0 +1,11 @@
+CORREÇÃO DOS BOTÕES DO MAPA
+
+Esta versão mantém suas galerias e acrescenta links diretos sobre os botões do mapa.
+
+Depois de extrair:
+1. Mantenha suas fotos em media/casa/fotos etc.
+2. Execute ATUALIZAR_GALERIAS.bat.
+3. Envie a pasta inteira ao mesmo projeto wania-enquete-1 pelo Vercel Drop.
+4. Teste Minha Casa > VER FOTOS.
+
+Não é necessário Node.js nem /api.

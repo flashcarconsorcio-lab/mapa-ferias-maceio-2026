@@ -1,0 +1,14 @@
+VERSÃO FINAL CORRIGIDA
+
+Correções:
+- os botões VER FOTOS / VER VÍDEOS agora possuem links reais no próprio HTML;
+- removido um erro de JavaScript que impedia os botões de funcionar;
+- a galeria agora lê data/midias.js diretamente;
+- ATUALIZAR_GALERIAS.bat recria data/midias.js automaticamente.
+
+PASSOS:
+1. Extraia o ZIP.
+2. Copie sua foto para media\casa\fotos.
+3. Execute ATUALIZAR_GALERIAS.bat.
+4. Envie a pasta inteira para o mesmo projeto wania-enquete-1 na Vercel.
+5. Teste Minha Casa > VER FOTOS.

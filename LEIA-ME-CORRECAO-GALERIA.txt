@@ -1,0 +1,8 @@
+CORREÇÃO DA GALERIA
+
+A foto estava chegando corretamente à Vercel. Esta versão corrige a leitura da lista de fotos.
+
+1. Extraia este ZIP.
+2. Copie suas fotos para media\casa\fotos (e demais etapas).
+3. Execute ATUALIZAR_GALERIAS.bat.
+4. Envie a pasta inteira para wania-enquete-1 pelo Vercel Drop.
