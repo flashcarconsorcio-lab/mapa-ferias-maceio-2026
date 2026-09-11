@@ -1,1 +1,13 @@
-﻿window.MIDIAS = {"tiete":{"fotos":[],"videos":[]},"casa":{"fotos":["media/casa/fotos/WhatsApp Image 2026-09-01 at 17.22.07.jpeg","media/casa/fotos/Imagem do WhatsApp 2026-09-01 às 17:26:24.jpeg"],"videos":[]},"congonhas":{"fotos":[],"videos":[]},"uber":{"fotos":[],"videos":[]},"maceio":{"fotos":[],"videos":[]}};
+﻿window.MIDIAS = {
+  "tiete":{"fotos":[],"videos":[]},
+  "casa":{
+    "fotos":[
+      "media/casa/fotos/WhatsApp Image 2026-09-01 at 17.22.07.jpeg",
+      "media/casa/fotos/WhatsApp Image 2026-09-01 at 17.26.24.jpeg"
+    ],
+    "videos":[]
+  },
+  "congonhas":{"fotos":[],"videos":[]},
+  "uber":{"fotos":[],"videos":[]},
+  "maceio":{"fotos":[],"videos":[]}
+};
