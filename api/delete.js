@@ -10,8 +10,9 @@ export default async function handler(request, response) {
 
   try {
     const body = request.body || {};
+
     const pathname = body.pathname;
-    const password = body.password;
+    const password = request.headers['x-admin-password'];
 
     if (
       !process.env.ADMIN_PASSWORD ||
@@ -29,6 +30,8 @@ export default async function handler(request, response) {
     }
 
     await del(pathname);
+
+    console.log('ARQUIVO EXCLUÍDO:', pathname);
 
     return response.status(200).json({
       ok: true,
