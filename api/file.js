@@ -1,43 +1,42 @@
 import { get } from '@vercel/blob';
 
-export default async function handler(request) {
-  const u = new URL(request.url);
-  const pathname = u.searchParams.get('pathname');
-
-  if (!pathname || !pathname.startsWith('media/')) {
-    return new Response(
-      'Arquivo inválido',
-      { status: 400 }
-    );
-  }
-
+export async function GET(request) {
   try {
-    const r = await get(pathname, {
+    const url = new URL(request.url);
+    const pathname = url.searchParams.get('pathname');
+
+    if (!pathname || !pathname.startsWith('media/')) {
+      return new Response('Arquivo inválido', {
+        status: 400
+      });
+    }
+
+    const result = await get(pathname, {
       access: 'private'
     });
 
-    if (!r || r.statusCode !== 200) {
-      return new Response(
-        'Não encontrado',
-        { status: 404 }
-      );
+    if (!result || result.statusCode !== 200) {
+      return new Response('Não encontrado', {
+        status: 404
+      });
     }
 
-    return new Response(r.stream, {
+    return new Response(result.stream, {
+      status: 200,
       headers: {
         'Content-Type':
-          r.blob.contentType || 'application/octet-stream',
-
-        'X-Content-Type-Options': 'nosniff',
-
+          result.blob?.contentType ||
+          'application/octet-stream',
         'Cache-Control':
           'public, max-age=3600'
       }
     });
 
-  } catch (e) {
+  } catch (error) {
+    console.error('ERRO FILE:', error);
+
     return new Response(
-      'Falha ao abrir arquivo',
+      error?.message || 'Erro ao carregar arquivo',
       { status: 500 }
     );
   }
