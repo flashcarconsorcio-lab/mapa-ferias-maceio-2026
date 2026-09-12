@@ -13,8 +13,8 @@ const kinds = new Set([
   'videos'
 ]);
 
-export default async function handler(request) {
-  const u = new URL(request.url);
+ export default async function handler(request) {
+  const u = new URL(request.url, 'http://localhost');
   const stage = u.searchParams.get('stage');
   const kind = u.searchParams.get('kind');
 
