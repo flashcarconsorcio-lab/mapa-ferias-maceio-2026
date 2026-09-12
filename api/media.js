@@ -1,4 +1,4 @@
-import { list } from '@vercel/blob';
+ import { list } from '@vercel/blob';
 
 const stages = new Set([
   'casa',
@@ -13,16 +13,16 @@ const kinds = new Set([
   'videos'
 ]);
 
- export default async function handler(request) {
+export default async function handler(request, response) {
   const u = new URL(request.url, 'http://localhost');
+
   const stage = u.searchParams.get('stage');
   const kind = u.searchParams.get('kind');
 
   if (!stages.has(stage) || !kinds.has(kind)) {
-    return Response.json(
-      { error: 'Parâmetros inválidos' },
-      { status: 400 }
-    );
+    return response.status(400).json({
+      error: 'Parâmetros inválidos'
+    });
   }
 
   try {
@@ -32,44 +32,43 @@ const kinds = new Set([
     const all = [];
 
     do {
-      const r = await list({
+      const resultado = await list({
         prefix,
         limit: 250,
         cursor
       });
 
-      all.push(...r.blobs);
-      cursor = r.cursor;
+      all.push(...resultado.blobs);
+      cursor = resultado.cursor;
 
     } while (cursor);
 
     const items = all
       .sort(
         (a, b) =>
-          new Date(b.uploadedAt) - new Date(a.uploadedAt)
+          new Date(b.uploadedAt) -
+          new Date(a.uploadedAt)
       )
-      .map(b => ({
-        pathname: b.pathname,
-        uploadedAt: b.uploadedAt,
+      .map(blob => ({
+        pathname: blob.pathname,
+        uploadedAt: blob.uploadedAt,
         url:
           `/api/file?pathname=${encodeURIComponent(
-            b.pathname
+            blob.pathname
           )}`
       }));
 
-    return Response.json(
-      { items },
-      {
-        headers: {
-          'Cache-Control': 'no-store'
-        }
-      }
-    );
+    response.setHeader('Cache-Control', 'no-store');
 
-  } catch (e) {
-    return Response.json(
-      { error: e?.message || 'Falha ao listar' },
-      { status: 500 }
-    );
+    return response.status(200).json({
+      items
+    });
+
+  } catch (erro) {
+    console.error('ERRO MEDIA:', erro);
+
+    return response.status(500).json({
+      error: erro?.message || 'Falha ao listar arquivos'
+    });
   }
 }
