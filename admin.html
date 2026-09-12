@@ -70,11 +70,14 @@ async function excluir(pathname){
       body:JSON.stringify({pathname:pathname})
     });
 
-    const texto = await r.text();
+  const texto = await r.text();
 
-    status.textContent =
-      'DELETE HTTP ' + r.status + ' — ' + texto;
-
+if(r.ok){
+  status.textContent='✅ Arquivo excluído com sucesso.';
+  await carregar();
+}else{
+  status.textContent='❌ Não foi possível excluir o arquivo. ' + texto;
+}
   } catch(e) {
     status.textContent =
       'ERRO DE CONEXÃO — ' + e.message;
