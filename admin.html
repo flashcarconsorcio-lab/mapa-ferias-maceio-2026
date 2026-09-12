@@ -51,9 +51,34 @@ async function carregar(){
   }catch(e){lista.textContent='Não foi possível carregar a lista.';}
 }
 async function excluir(pathname){
-  if(!senha.value)return status.textContent='Digite a senha para excluir.'; if(!confirm('Excluir este arquivo?'))return;
-  const r=await fetch('/api/delete',{method:'POST',headers:{'Content-Type':'application/json','x-admin-password':senha.value},body: JSON.stringify({pathname: caminho})}); const j=await r.json().catch(()=>({}));
-  status.textContent=r.ok?'Arquivo excluído.':('Erro ao excluir: '+(j.error||r.status)); if(r.ok)carregar();
+  if(!senha.value){
+    status.textContent='Digite a senha para excluir.';
+    return;
+  }
+
+  if(!confirm('Excluir este arquivo?')) return;
+
+  status.textContent='Tentando excluir...';
+
+  try {
+    const r = await fetch('/api/delete',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-admin-password':senha.value
+      },
+      body:JSON.stringify({pathname:pathname})
+    });
+
+    const texto = await r.text();
+
+    status.textContent =
+      'DELETE HTTP ' + r.status + ' — ' + texto;
+
+  } catch(e) {
+    status.textContent =
+      'ERRO DE CONEXÃO — ' + e.message;
+  }
 }
 document.getElementById('publicar').onclick=publicar;document.getElementById('atualizar').onclick=carregar;stage.onchange=carregar;kind.onchange=carregar;carregar();
 </script>
