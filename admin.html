@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Administrador - Mapa de Férias</title>
+<style>
+body{font-family:Arial,sans-serif;margin:0;background:#2b1609;color:#2b1609}.wrap{max-width:920px;margin:24px auto;background:#fff4dc;border-radius:20px;padding:22px}.top{display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap}h1{margin:0 0 8px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.full{grid-column:1/-1}label{font-weight:700;display:block;margin-bottom:6px}input,select{width:100%;box-sizing:border-box;padding:12px;border:1px solid #d7b98c;border-radius:10px;background:#fff}button{border:0;border-radius:10px;padding:12px 18px;font-weight:700;cursor:pointer;background:#3a2109;color:#fff}.secondary{background:#7d5a38}.status{margin-top:14px;padding:12px;border-radius:10px;background:#fff;border:1px solid #e5d2b2;white-space:pre-wrap}.bar{height:12px;border-radius:999px;background:#ead8bb;overflow:hidden;margin-top:10px}.bar>div{height:100%;width:0;background:#3a2109;transition:.2s}.files{margin-top:22px}.item{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#fff;padding:10px;border-radius:10px;margin:8px 0}.item small{word-break:break-all}.danger{background:#9f1d1d}@media(max-width:700px){.grid{grid-template-columns:1fr}.full{grid-column:auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><div><h1>🔐 Área do Administrador</h1><div>Publique fotos e vídeos sem editar o GitHub.</div></div><a href="index.html">← Voltar ao mapa</a></div>
+  <div class="grid" style="margin-top:20px">
+    <div class="full"><label>Senha de administrador</label><input id="senha" type="password" placeholder="Digite sua senha"></div>
+    <div><label>Etapa da viagem</label><select id="stage"><option value="casa">Minha Casa</option><option value="uber">Uber</option><option value="tiete">Rodoviária do Tietê</option><option value="congonhas">Aeroporto de Congonhas</option><option value="maceio">Maceió</option></select></div>
+    <div><label>Tipo</label><select id="kind"><option value="fotos">📷 Fotos</option><option value="videos">🎥 Vídeos</option></select></div>
+    <div class="full"><label>Escolha os arquivos</label><input id="arquivos" type="file" multiple accept="image/*,video/*"></div>
+    <div class="full"><button id="publicar">Publicar arquivos</button> <button id="atualizar" class="secondary">Atualizar lista</button></div>
+  </div>
+  <div class="bar"><div id="progress"></div></div>
+  <div id="status" class="status">Pronto para publicar.</div>
+  <div class="files"><h2>Arquivos publicados pelo administrador</h2><div id="lista"></div></div>
+</div>
+<script type="module">
+import { upload } from 'https://esm.sh/@vercel/blob@2.6.1/client';
+const senha=document.getElementById('senha'), stage=document.getElementById('stage'), kind=document.getElementById('kind'), arquivos=document.getElementById('arquivos'), status=document.getElementById('status'), progress=document.getElementById('progress'), lista=document.getElementById('lista');
+const safe=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9._-]+/g,'-').replace(/-+/g,'-').slice(0,100);
+async function publicar(){
+  const files=[...arquivos.files]; if(!senha.value)return status.textContent='Digite a senha.'; if(!files.length)return status.textContent='Escolha pelo menos um arquivo.';
+  document.getElementById('publicar').disabled=true; let ok=0;
+  try{
+    for(let i=0;i<files.length;i++){
+      const f=files[i]; const expected=kind.value==='fotos'?'image/':'video/'; if(!f.type.startsWith(expected)){status.textContent=`${f.name}: tipo de arquivo incompatível.`;continue;}
+      const pathname=`media/${stage.value}/${kind.value}/${Date.now()}-${safe(f.name)}`;
+      status.textContent=`Enviando ${i+1} de ${files.length}: ${f.name}`;
+      await upload(pathname,f,{access:'private',handleUploadUrl:'/api/upload',multipart:true,clientPayload:JSON.stringify({password:senha.value,stage:stage.value,kind:kind.value}) ,onUploadProgress:p=>{progress.style.width=Math.round(p.percentage)+'%';}});
+      ok++;
+    }
+    status.textContent=`Concluído: ${ok} arquivo(s) publicado(s).`;
+    arquivos.value=''; progress.style.width='0%'; await carregar();
+  }catch(e){status.textContent='Erro no envio: '+(e?.message||e);}finally{document.getElementById('publicar').disabled=false;}
+}
+async function carregar(){
+  lista.textContent='Carregando...';
+  try{
+    const r=await fetch(`/api/media?stage=${encodeURIComponent(stage.value)}&kind=${encodeURIComponent(kind.value)}&admin=1`,{cache:'no-store'}); const j=await r.json();
+    const items=j.items||[]; if(!items.length){lista.textContent='Nenhum arquivo do administrador nesta etapa.';return;}
+    lista.innerHTML='';
+    for(const it of items){const d=document.createElement('div');d.className='item';const s=document.createElement('small');s.textContent=it.pathname;const b=document.createElement('button');b.textContent='Excluir';b.className='danger';b.onclick=()=>excluir(it.pathname);d.append(s,b);lista.appendChild(d);}
+  }catch(e){lista.textContent='Não foi possível carregar a lista.';}
+}
+async function excluir(pathname){
+  if(!senha.value)return status.textContent='Digite a senha para excluir.'; if(!confirm('Excluir este arquivo?'))return;
+  const r=await fetch('/api/delete',{method:'POST',headers:{'Content-Type':'application/json','x-admin-password':senha.value},body:JSON.stringify({pathname})}); const j=await r.json().catch(()=>({}));
+  status.textContent=r.ok?'Arquivo excluído.':('Erro ao excluir: '+(j.error||r.status)); if(r.ok)carregar();
+}
+document.getElementById('publicar').onclick=publicar;document.getElementById('atualizar').onclick=carregar;stage.onchange=carregar;kind.onchange=carregar;carregar();
+</script>
+</body></html>
