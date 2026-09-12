@@ -1,4 +1,4 @@
-import { put, list, get } from '@vercel/blob';
+import { put, list, get, del } from '@vercel/blob';
 import { randomUUID } from 'node:crypto';
 
 const stages = new Set([
@@ -130,6 +130,46 @@ export default async function handler(request, response) {
 
       return response.status(500).json({
         error: 'Não foi possível publicar o comentário'
+      });
+    }
+  }  // EXCLUIR COMENTÁRIO
+  if (request.method === 'DELETE') {
+    try {
+      const body = request.body || {};
+
+      const stage = String(body.stage || '').trim();
+      const id = String(body.id || '').trim();
+      const password = request.headers['x-admin-password'];
+
+      if (
+        !process.env.ADMIN_PASSWORD ||
+        password !== process.env.ADMIN_PASSWORD
+      ) {
+        return response.status(401).json({
+          error: 'Senha de administrador incorreta'
+        });
+      }
+
+      if (!stages.has(stage) || !id) {
+        return response.status(400).json({
+          error: 'Comentário inválido'
+        });
+      }
+
+      const pathname = `comments/${stage}/${id}.json`;
+
+      await del(pathname);
+
+      return response.status(200).json({
+        ok: true,
+        id
+      });
+
+    } catch (error) {
+      console.error('ERRO COMMENTS DELETE:', error);
+
+      return response.status(500).json({
+        error: 'Não foi possível excluir o comentário'
       });
     }
   }
