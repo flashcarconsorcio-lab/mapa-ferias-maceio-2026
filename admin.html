@@ -21,6 +21,11 @@ body{font-family:Arial,sans-serif;margin:0;background:#2b1609;color:#2b1609}.wra
   <div class="bar"><div id="progress"></div></div>
   <div id="status" class="status">Pronto para publicar.</div>
   <div class="files"><h2>Arquivos publicados pelo administrador</h2><div id="lista"></div></div>
+  <div class="files">
+  <h2>💬 Comentários públicos</h2>
+  <button id="atualizarComentarios" class="secondary">Atualizar comentários</button>
+  <div id="listaComentarios">Carregando comentários...</div>
+</div>D
 </div>
 <script type="module">
 import { upload } from 'https://esm.sh/@vercel/blob@2.6.1/client';
@@ -83,6 +88,103 @@ if(r.ok){
       'ERRO DE CONEXÃO — ' + e.message;
   }
 }
-document.getElementById('publicar').onclick=publicar;document.getElementById('atualizar').onclick=carregar;stage.onchange=carregar;kind.onchange=carregar;carregar();
+
+  const listaComentarios = document.getElementById('listaComentarios');
+
+async function carregarComentariosAdmin(){
+  listaComentarios.textContent = 'Carregando comentários...';
+
+  try{
+    const r = await fetch(
+      '/api/comments?stage=' + encodeURIComponent(stage.value),
+      {cache:'no-store'}
+    );
+
+    const data = await r.json();
+
+    if(!r.ok){
+      throw new Error(data.error || 'Erro ao carregar comentários');
+    }
+
+    const comentarios = data.comments || [];
+    listaComentarios.innerHTML = '';
+
+    if(!comentarios.length){
+      listaComentarios.textContent = 'Nenhum comentário nesta etapa.';
+      return;
+    }
+
+    for(const c of comentarios){
+      const item = document.createElement('div');
+      item.className = 'item';
+
+      const textoComentario = document.createElement('div');
+
+      const nomeComentario = document.createElement('b');
+      nomeComentario.textContent = c.name;
+
+      const mensagem = document.createElement('div');
+      mensagem.textContent = c.text;
+
+      textoComentario.appendChild(nomeComentario);
+      textoComentario.appendChild(mensagem);
+
+      const botao = document.createElement('button');
+      botao.textContent = 'Excluir';
+      botao.onclick = () => excluirComentario(c.id);
+
+      item.appendChild(textoComentario);
+      item.appendChild(botao);
+
+      listaComentarios.appendChild(item);
+    }
+
+  }catch(e){
+    listaComentarios.textContent =
+      'Não foi possível carregar os comentários.';
+  }
+}
+
+async function excluirComentario(id){
+  if(!senha.value){
+    status.textContent = 'Digite a senha para excluir o comentário.';
+    return;
+  }
+
+  if(!confirm('Excluir este comentário?')) return;
+
+  try{
+    const r = await fetch('/api/comments',{
+      method:'DELETE',
+      headers:{
+        'Content-Type':'application/json',
+        'x-admin-password':senha.value
+      },
+      body:JSON.stringify({
+        stage:stage.value,
+        id:id
+      })
+    });
+
+    const data = await r.json();
+
+    if(!r.ok){
+      throw new Error(data.error || 'Erro ao excluir comentário');
+    }
+
+    status.textContent = '✅ Comentário excluído com sucesso.';
+    await carregarComentariosAdmin();
+
+  }catch(e){
+    status.textContent = '❌ ' + e.message;
+  }
+}
+
+document.getElementById('atualizarComentarios').onclick =
+  carregarComentariosAdmin;
+
+stage.addEventListener('change', carregarComentariosAdmin);
+
+carregarComentariosAdmin();document.getElementById('publicar').onclick=publicar;document.getElementById('atualizar').onclick=carregar;stage.onchange=carregar;kind.onchange=carregar;carregar();
 </script>
 </body></html>
