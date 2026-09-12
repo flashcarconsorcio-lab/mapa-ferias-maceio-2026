@@ -1,53 +1,73 @@
+
 import { handleUpload } from '@vercel/blob/client';
 
-const stages = new Set(['casa', 'uber', 'tiete', 'congonhas', 'maceio']);
-const kinds = new Set(['fotos', 'videos']);
+const stages = new Set([
+  'casa',
+  'uber',
+  'tiete',
+  'congonhas',
+  'maceio'
+]);
 
-export default async function handler(request) {
+const kinds = new Set([
+  'fotos',
+  'videos'
+]);
+
+export default async function handler(request, response) {
   if (request.method !== 'POST') {
-    return new Response(
-      JSON.stringify({ error: 'Método não permitido' }),
-      {
-        status: 405,
-        headers: { 'content-type': 'application/json' }
-      }
-    );
+    return response.status(405).json({
+      error: 'Método não permitido'
+    });
   }
 
   try {
-    const body = await request.json();
+    const body = request.body;
 
-    const result = await handleUpload({
+    const jsonResponse = await handleUpload({
       body,
       request,
 
-      onBeforeGenerateToken: async (pathname, clientPayload) => {
-        let p = {};
+      onBeforeGenerateToken: async (
+        pathname,
+        clientPayload
+      ) => {
+        let dados = {};
 
         try {
-          p = JSON.parse(clientPayload || '{}');
+          dados = JSON.parse(clientPayload || '{}');
         } catch {}
 
         if (
           !process.env.ADMIN_PASSWORD ||
-          p.password !== process.env.ADMIN_PASSWORD
+          dados.password !== process.env.ADMIN_PASSWORD
         ) {
-          throw new Error('Senha de administrador incorreta.');
+          throw new Error(
+            'Senha de administrador incorreta.'
+          );
         }
 
-        if (!stages.has(p.stage) || !kinds.has(p.kind)) {
-          throw new Error('Etapa ou tipo inválido.');
+        if (
+          !stages.has(dados.stage) ||
+          !kinds.has(dados.kind)
+        ) {
+          throw new Error(
+            'Etapa ou tipo inválido.'
+          );
         }
 
-        const prefix = `media/${p.stage}/${p.kind}/`;
+        const prefix =
+          `media/${dados.stage}/${dados.kind}/`;
 
         if (!pathname.startsWith(prefix)) {
-          throw new Error('Caminho de arquivo inválido.');
+          throw new Error(
+            'Caminho de arquivo inválido.'
+          );
         }
 
         return {
           allowedContentTypes:
-            p.kind === 'fotos'
+            dados.kind === 'fotos'
               ? [
                   'image/jpeg',
                   'image/png',
@@ -66,21 +86,35 @@ export default async function handler(request) {
           addRandomSuffix: true,
 
           tokenPayload: JSON.stringify({
-            stage: p.stage,
-            kind: p.kind
+            stage: dados.stage,
+            kind: dados.kind
           })
         };
       },
 
-      onUploadCompleted: async () => {}
+      onUploadCompleted: async ({
+        blob,
+        tokenPayload
+      }) => {
+        console.log(
+          'Upload concluído:',
+          blob.pathname,
+          tokenPayload
+        );
+      }
     });
 
-    return Response.json(result);
-
-  } catch (e) {
-    return Response.json(
-      { error: e?.message || 'Falha no upload' },
-      { status: 400 }
+    return response.status(200).json(
+      jsonResponse
     );
+
+  } catch (erro) {
+    console.error('ERRO UPLOAD:', erro);
+
+    return response.status(400).json({
+      error:
+        erro?.message ||
+        'Falha no upload'
+    });
   }
 }
