@@ -1,14 +1,12 @@
 import { get } from '@vercel/blob';
+import { Readable } from 'node:stream';
 
-export async function GET(request) {
+export default async function handler(request, response) {
   try {
-    const url = new URL(request.url);
-    const pathname = url.searchParams.get('pathname');
+    const pathname = request.query.pathname;
 
     if (!pathname || !pathname.startsWith('media/')) {
-      return new Response('Arquivo inválido', {
-        status: 400
-      });
+      return response.status(400).send('Arquivo inválido');
     }
 
     const result = await get(pathname, {
@@ -16,28 +14,31 @@ export async function GET(request) {
     });
 
     if (!result || result.statusCode !== 200) {
-      return new Response('Não encontrado', {
-        status: 404
-      });
+      return response.status(404).send('Não encontrado');
     }
 
-    return new Response(result.stream, {
-      status: 200,
-      headers: {
-        'Content-Type':
-          result.blob?.contentType ||
-          'application/octet-stream',
-        'Cache-Control':
-          'public, max-age=3600'
-      }
-    });
+    response.setHeader(
+      'Content-Type',
+      result.blob.contentType || 'application/octet-stream'
+    );
+
+    response.setHeader(
+      'Cache-Control',
+      'public, max-age=3600'
+    );
+
+    response.setHeader(
+      'X-Content-Type-Options',
+      'nosniff'
+    );
+
+    Readable.fromWeb(result.stream).pipe(response);
 
   } catch (error) {
     console.error('ERRO FILE:', error);
 
-    return new Response(
-      error?.message || 'Erro ao carregar arquivo',
-      { status: 500 }
-    );
+    return response
+      .status(500)
+      .send(error?.message || 'Erro ao carregar arquivo');
   }
 }
