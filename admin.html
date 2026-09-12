@@ -52,7 +52,7 @@ async function carregar(){
 }
 async function excluir(pathname){
   if(!senha.value)return status.textContent='Digite a senha para excluir.'; if(!confirm('Excluir este arquivo?'))return;
-  const r=await fetch('/api/delete',{method:'POST',headers:{'Content-Type':'application/json','x-admin-password':senha.value},body:JSON.stringify({pathname})}); const j=await r.json().catch(()=>({}));
+  const r=await fetch('/api/delete',{method:'POST',headers:{'Content-Type':'application/json','x-admin-password':senha.value},body: JSON.stringify({pathname: caminho})}); const j=await r.json().catch(()=>({}));
   status.textContent=r.ok?'Arquivo excluído.':('Erro ao excluir: '+(j.error||r.status)); if(r.ok)carregar();
 }
 document.getElementById('publicar').onclick=publicar;document.getElementById('atualizar').onclick=carregar;stage.onchange=carregar;kind.onchange=carregar;carregar();
