@@ -14,16 +14,10 @@ const kinds = new Set([
   'videos'
 ]);
 
-export default async function handler(request, response) {
-  if (request.method !== 'POST') {
-    return response.status(405).json({
-      error: 'Método não permitido'
-    });
-  }
+export async function POST(request) {
+  const body = await request.json();
 
   try {
-    const body = request.body;
-
     const jsonResponse = await handleUpload({
       body,
       request,
@@ -104,17 +98,20 @@ export default async function handler(request, response) {
       }
     });
 
-    return response.status(200).json(
-      jsonResponse
+    return Response.json(jsonResponse);
+
+  } catch (error) {
+    console.error('ERRO UPLOAD:', error);
+
+    return Response.json(
+      {
+        error:
+          error?.message ||
+          'Falha no upload'
+      },
+      {
+        status: 400
+      }
     );
-
-  } catch (erro) {
-    console.error('ERRO UPLOAD:', erro);
-
-    return response.status(400).json({
-      error:
-        erro?.message ||
-        'Falha no upload'
-    });
   }
 }
