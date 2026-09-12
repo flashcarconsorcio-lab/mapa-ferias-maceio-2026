@@ -183,6 +183,8 @@ function setVote(choice) {
 }
 function showFinalResult() {
   pollActions.hidden = true;
+  const placar = document.getElementById("partialScore");
+if (placar) placar.hidden = true;
   countdown.textContent = "Votação encerrada em 13/09/2026 às 10:20.";
   result.textContent = "🏆 RESULTADO FINAL DA BRINCADEIRA: WÂNIA VENCEU E VAI DE ÔNIBUS!";
   result.classList.add("result-final");
@@ -192,6 +194,56 @@ function showFinalResult() {
   void waniaWinner.offsetWidth;
   waniaWinner.classList.add("wania-victory");
   darliLoser.classList.add("darli-no");
+}function updatePartialScore() {
+  let placar = document.getElementById("partialScore");
+
+  if (!placar) {
+    placar = document.createElement("div");
+    placar.id = "partialScore";
+    placar.style.marginTop = "12px";
+    placar.style.padding = "12px";
+    placar.style.borderRadius = "12px";
+    placar.style.background = "#fff7e6";
+    placar.style.textAlign = "center";
+
+    result.insertAdjacentElement("afterend", placar);
+  }
+
+  const left = pollDeadline.getTime() - Date.now();
+
+  if (left <= 0) {
+    placar.hidden = true;
+    return;
+  }
+
+  const horas = left / 3600000;
+
+  let darli;
+  let wania;
+
+  if (horas > 12) {
+    darli = 51;
+    wania = 49;
+  } else if (horas > 6) {
+    darli = 50;
+    wania = 50;
+  } else if (horas > 2) {
+    darli = 48;
+    wania = 52;
+  } else {
+    darli = 45;
+    wania = 55;
+  }
+
+  placar.hidden = false;
+
+  placar.innerHTML = `
+    <div style="font-weight:800;margin-bottom:8px">
+      📊 Placar da brincadeira
+    </div>
+    <div>🚆 Darli — TREM: <b>${darli}%</b></div>
+    <div>🚌 Wânia — ÔNIBUS: <b>${wania}%</b></div>
+  `;
 }
 function updatePollState() {
   const now = Date.now();
@@ -201,6 +253,7 @@ function updatePollState() {
     return;
   }
   pollActions.hidden = false;
+  updatePartialScore();
   winnerStage.hidden = true;
   result.classList.remove("result-final");
   const days = Math.floor(left / 86400000);
