@@ -11,6 +11,14 @@ body{font-family:Arial,sans-serif;margin:0;background:#2b1609;color:#2b1609}.wra
 <body>
 <div class="wrap">
   <div class="top"><div><h1>🔐 Área do Administrador</h1><div>Publique fotos e vídeos sem editar o GitHub.</div></div><a href="index.html">← Voltar ao mapa</a></div>
+  <section class="status" aria-label="Controle do mapa">
+    <h2>Funcionamento do mapa</h2>
+    <p id="mapState">Consultando o estado do mapa...</p>
+    <button id="ativarMapa" type="button">✅ Colocar em funcionamento</button>
+    <button id="manutencaoMapa" type="button" class="secondary">🛠️ Colocar em manutenção</button>
+    <button id="verMapa" type="button" class="secondary">👁️ Ver meu mapa</button>
+    <p>Durante a manutenção, o público verá o casal caminhando até a praia. Você pode continuar vendo o mapa e publicando mídias aqui.</p>
+  </section>
   <div class="grid" style="margin-top:20px">
     <div class="full"><label>Senha de administrador</label><input id="senha" type="password" placeholder="Digite sua senha"></div>
     <div><label>Etapa da viagem</label><select id="stage"><option value="casa">Minha Casa</option><option value="uber">Uber</option><option value="tiete">Rodoviária do Tietê</option><option value="congonhas">Aeroporto de Congonhas</option><option value="maceio">Maceió</option></select></div>
@@ -185,6 +193,42 @@ document.getElementById('atualizarComentarios').onclick =
 
 stage.addEventListener('change', carregarComentariosAdmin);
 
-carregarComentariosAdmin();document.getElementById('publicar').onclick=publicar;document.getElementById('atualizar').onclick=carregar;stage.onchange=carregar;kind.onchange=carregar;carregar();
+carregarComentariosAdmin();const mapState=document.getElementById('mapState');
+async function carregarEstado(){
+  try {
+    const r=await fetch('/api/map-status',{cache:'no-store'});
+    if(!r.ok)throw Error('Estado indisponível');
+    const state=await r.json();
+    mapState.textContent=state.active?'O mapa está em funcionamento.':'O público está vendo a tela de manutenção.';
+  }catch(e){mapState.textContent='Não foi possível consultar o estado do mapa.';}
+}
+async function alterarEstado(active){
+  if(!senha.value){mapState.textContent='Digite a senha de administrador acima.';senha.focus();return;}
+  const buttons=[document.getElementById('ativarMapa'),document.getElementById('manutencaoMapa')];
+  buttons.forEach(b=>b.disabled=true);
+  try {
+    const r=await fetch('/api/map-status',{method:'POST',headers:{'Content-Type':'application/json','x-admin-password':senha.value},body:JSON.stringify({active})});
+    const state=await r.json().catch(()=>({error:'Resposta inesperada do servidor.'}));
+    if(!r.ok)throw Error(state.error||'Não foi possível salvar.');
+    sessionStorage.setItem('mapaAdminSenha',senha.value);
+    mapState.textContent=active?'Mapa em funcionamento.':'Manutenção ativada. O público verá a animação da praia.';
+  }catch(e){mapState.textContent=e.message;}
+  finally{buttons.forEach(b=>b.disabled=false);}
+}
+document.getElementById('ativarMapa').onclick=()=>alterarEstado(true);
+document.getElementById('manutencaoMapa').onclick=()=>alterarEstado(false);
+document.getElementById('verMapa').onclick=async()=>{
+  if(!senha.value){mapState.textContent='Digite a senha de administrador acima.';senha.focus();return;}
+  try{
+    const r=await fetch('/api/map-status',{method:'POST',headers:{'Content-Type':'application/json','x-admin-password':senha.value},body:JSON.stringify({preview:true})});
+    const state=await r.json().catch(()=>({error:'Resposta inesperada do servidor.'}));
+    if(!r.ok||!state.admin)throw Error(state.error||'Senha incorreta.');
+    sessionStorage.setItem('mapaAdminSenha',senha.value);
+    location.href='index.html?administrador=1';
+  }catch(e){mapState.textContent=e.message;}
+};
+carregarEstado();
+document.getElementById('publicar').onclick=publicar;document.getElementById('atualizar').onclick=carregar;stage.onchange=carregar;kind.onchange=carregar;carregar();
 </script>
 </body></html>
+
