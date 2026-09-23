@@ -119,15 +119,21 @@
 const maintenanceScreen = document.getElementById('maintenanceScreen');
 const mapaPrincipal = document.getElementById('mapaPrincipal');
 const adminPreviewNotice = document.getElementById('adminPreviewNotice');
-maintenanceScreen.hidden = true;
+maintenanceScreen.hidden = false;
 mapaPrincipal.hidden = true;
 (async () => {
   try {
     const wantsPreview = new URLSearchParams(location.search).get('administrador') === '1';
     const password = wantsPreview ? sessionStorage.getItem('mapaAdminSenha') : null;
-    const response = await fetch('/api/map-status', {
-      cache: 'no-store', headers: password ? { 'x-admin-password': password } : {}
-    });
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 6000);
+    let response;
+    try {
+      response = await fetch('/api/map-status', {
+        cache: 'no-store', signal: controller.signal,
+        headers: password ? { 'x-admin-password': password } : {}
+      });
+    } finally { clearTimeout(timeout); }
     if (!response.ok) throw new Error('Estado indisponível');
     const state = await response.json();
     const preview = wantsPreview && state.admin === true;
