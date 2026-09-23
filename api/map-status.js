@@ -1,4 +1,4 @@
-import { get, put } from '@vercel/blob';
+import { get, put, list } from '@vercel/blob';
 
 const PATH = 'config/mapa-status.json';
 const headers = { 'Cache-Control': 'no-store', 'Content-Type': 'application/json; charset=utf-8' };
@@ -7,6 +7,8 @@ function authorized(request) {
   return Boolean(expected && request.headers.get('x-admin-password') === expected);
 }
 async function readStatus() {
+  const entries = await list({ prefix: PATH, limit: 10 });
+  if (!entries.blobs.some(item => item.pathname === PATH)) return true;
   const blob = await get(PATH, { access: 'private' });
   if (!blob || blob.statusCode === 404) return true;
   if (blob.statusCode !== 200) throw new Error('Falha ao ler o estado do mapa');
