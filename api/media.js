@@ -5,7 +5,12 @@ const stages = new Set([
   'uber',
   'tiete',
   'congonhas',
-  'maceio'
+  'maceio',
+  'maceio-dia-1',
+  'maceio-dia-2',
+  'maceio-dia-3',
+  'maceio-dia-4',
+  'maceio-dia-5'
 ]);
 
 const kinds = new Set([
