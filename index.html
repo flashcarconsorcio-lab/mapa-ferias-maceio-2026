@@ -227,6 +227,7 @@ for (const kind of ["fotos","videos"]) {
   });
 }
 document.getElementById("dayPickerClose").addEventListener("click",()=>dayPicker.close());
+dayPicker.querySelectorAll("[data-day]").forEach(link=>link.addEventListener("click",()=>dayPicker.close()));
 const shareUrl = window.location.href;
 const shareText = "Veja nosso Mapa de Férias da Felicidade!";
 const shareStatus = document.getElementById("shareStatus");
